@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<style>
+    .custom-card-body {
+        height: 300px;
+    }
+</style>
+
+<div class="card text-center">
+    <div class="card-body custom-card-body">
+        <h1>Welcome To Feedback System</h1>
+        <style>
+            p {
+                font-size: 20px;
+                margin-bottom: 25px;
+            }
+        
+        </style>
+        
+        
+        <p>A feedback system is a crucial 
+            component of any organization's 
+            strategy to collect, analyze, 
+            and respond to user opinions and experiences. 
+        </p>
+        <p>
+            It serves as a mechanism for users to express their thoughts, 
+            provide suggestions, and report issues related to products, 
+            services, or interactions</p>
+        
+       
+        <a class="btn btn-dark btn-lg" href="{% url 'polls:login' %}">Login</a>
+        <a class="btn btn-dark btn-lg" href="{% url 'polls:signup' %}">Signup</a>
+    </div>
+</div>
+
+{% endblock %}

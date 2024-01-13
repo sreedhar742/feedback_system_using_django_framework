@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card text-center">
+    <div class="card-body">
+        <h1>Welcome To Feedback System</h1>
+
+        <form method="post" action="{% url 'polls:index' %}">
+            {% csrf_token %}
+            
+            <!-- Input for ID -->
+            <div class="form-group">
+                <label for="idInput">ID:</label>
+                <input type="text" class="form-control" id="idInput" name="id" required>
+            </div>
+
+            <!-- Input for Gmail -->
+            <div class="form-group">
+                <label for="passwordInput">Password:</label>
+                <input type="password" class="form-control" id="passwordInput" name="password" required>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

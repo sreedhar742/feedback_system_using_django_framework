@@ -1,0 +1,20 @@
+
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="mb-5 text-center">All Questions and Results</h1>
+
+    {% for question in all_questions %}
+        <h2 class="mb-3">{{ question.question_text }}</h2>
+
+        <ul class="list-group mb-5">
+            {% for choice in question.choice_set.all %}
+                <li class="list-group-item">
+                    {{ choice.choice_text }}
+                    <span class="badge badge-success float-right">{{ choice.votes }} vote{{ choice.votes | pluralize }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+
+    <a href="{% url 'polls:logout' %}" class="btn btn-secondary btn-sm float-right mb-2">Logout</a>
+{% endblock %}
