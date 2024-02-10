@@ -1,14 +1,17 @@
 from django.template import loader
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse,HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render,redirect
 from django.urls import reverse
+
+
 
 from .models import Question, Choice,Registration
 
 
 # Get questions and display them
 
-
+from django.contrib.auth.decorators import login_required
+@login_required(login_url='polls:login')
 def index(request):
     
     latest_question_list = Question.objects.order_by('-pub_date')
@@ -23,7 +26,7 @@ def index(request):
 
 
 
-
+@login_required(login_url='polls:login')
 def detail(request, question_id):
     try:
         question = Question.objects.get(pk=question_id)
@@ -36,18 +39,19 @@ from django.shortcuts import render
 from .models import Question
 
 
-
-
+@login_required(login_url='polls:login')
 def results(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     return render(request, 'polls/results.html', {'question': question})
 
-
+@login_required(login_url='polls:login')
 # Vote for a question choice
 def result(request):
     all_questions = Question.objects.all()
     return render(request, 'polls/result.html', {'all_questions': all_questions})
 
+
+@login_required(login_url='polls:login')
 def vote(request, question_id):
     # print(request.POST['choice'])
     question = get_object_or_404(Question, pk=question_id)
@@ -66,32 +70,96 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse('polls:index'))
+    
+    
+    
+
+from django.contrib.auth import authenticate, login as auth_login,logout as auth_logout
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 
 def login(request):
-    return render(request,'polls/login.html')
+    if request.method == "POST":
+        username1 = request.POST["id"]
+        password1 = request.POST["password"]
+        user = authenticate(request, username=username1, password=password1)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('polls:index')
+        else:
+            return HttpResponse("Incorrect details")
+
+    return render(request, 'polls/login.html')
 
 
+
+
+from django.contrib.auth.models import User
 def signup(request):
-    if request.method=='POST':
-        form=RegistrationForm(request.POST)
-        if form.is_valid():
-            f_name=form.cleaned_data['first_name']
-            l_name=form.cleaned_data['last_name']
-            i_name=form.cleaned_data['id_name']
-            mail=form.cleaned_data['gmail']
-            p_word=form.cleaned_data['password']
-            create_new=Registration(first_name=f_name,last_name=l_name,id_name=i_name,gmail=mail,password=p_word)
-            create_new.save()
-            return HttpResponseRedirect(reverse('polls:index'))
+    if request.method=="POST":
+        firstname=request.POST.get('first_name')
+        lastname=request.POST.get('last_name')
+        idname=request.POST.get('id_name')
+        gmail=request.POST.get('gmail')
+        password=request.POST.get('password')
+        print(firstname,lastname,idname,gmail)
+        my_user=User.objects.create_user(firstname,idname,password)
+        my_user.save()
+        return redirect('polls:login')
+    # if request.method=='POST':
+    #     form=RegistrationForm(request.POST)
+    #     if form.is_valid():
+    #         f_name=form.cleaned_data['first_name']
+    #         l_name=form.cleaned_data['last_name']
+    #         i_name=form.cleaned_data['id_name']
+    #         mail=form.cleaned_data['gmail']
+    #         p_word=form.cleaned_data['password']
+    #         create_new=Registration(first_name=f_name,last_name=l_name,id_name=i_name,gmail=mail,password=p_word)
+    #         create_new.save()
+    #         return HttpResponseRedirect(reverse('polls:index'))
             
     form=RegistrationForm() 
     return render(request,"polls/signup.html",{'form':form}) 
-    # return render(request,'polls/signup.html')  
+    # return render(request,'polls/signup.html')
 
 def logout(request):
+    redirect(request)
     return render(request,'pages/index.html')
 
 
+
+
+from django.contrib.auth.models import User
+def signup(request):
+    if request.method=="POST":
+        firstname=request.POST.get('first_name')
+        lastname=request.POST.get('last_name')
+        idname=request.POST.get('id_name')
+        gmail=request.POST.get('gmail')
+        password=request.POST.get('password')
+        print(firstname,lastname,idname,gmail)
+        my_user=User.objects.create_user(firstname,idname,password)
+        my_user.save()
+        return redirect('polls:login')
+    # if request.method=='POST':
+    #     form=RegistrationForm(request.POST)
+    #     if form.is_valid():
+    #         f_name=form.cleaned_data['first_name']
+    #         l_name=form.cleaned_data['last_name']
+    #         i_name=form.cleaned_data['id_name']
+    #         mail=form.cleaned_data['gmail']
+    #         p_word=form.cleaned_data['password']
+    #         create_new=Registration(first_name=f_name,last_name=l_name,id_name=i_name,gmail=mail,password=p_word)
+    #         create_new.save()
+    #         return HttpResponseRedirect(reverse('polls:index'))
+            
+    form=RegistrationForm() 
+    return render(request,"polls/signup.html",{'form':form}) 
+    # return render(request,'polls/signup.html')
+
+def logout(request):
+    auth_logout(request)
+    return render(request,'pages/index.html')
 
 
 
